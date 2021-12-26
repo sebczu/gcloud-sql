@@ -1,0 +1,26 @@
+version: '3.3'
+services:
+
+  gcloud-sql:
+    image: sebczu/personal:gcloud-sql-0.0.1
+    container_name: gcloud-sql
+    user: root
+    ports:
+      - 3306:3306
+    environment:
+      - CREDENTIAL=${CREDENTIAL}
+      - GCLOUD_SQL_CONNECTION=personal-331119:europe-central2:${GCLOUD_DATABASE_NAME}
+
+  dbgate:
+    image: dbgate/dbgate
+    restart: always
+    ports:
+      - 3000:3000
+    environment:
+      CONNECTIONS: connection
+      LABEL_connection: template-mysql
+      SERVER_connection: gcloud-sql
+      USER_connection: ${TEMPLATE_DATABASE_USERNAME}
+      PASSWORD_connection: ${TEMPLATE_DATABASE_PASSWORD}
+      PORT_connection: 3306
+      ENGINE_connection: mysql@dbgate-plugin-mysql
